@@ -59,3 +59,24 @@ def test_create_user():
         assert 'id' in response_data
         assert 'createdAt' in response_data
 
+
+
+@allure.feature('User')
+@allure.story('Обновление существующего пользователя')
+@allure.severity(allure.severity_level.NORMAL)
+def test_update_existing_user():
+    url = f"{BASE_URL}/users/2"
+    payload = {
+    "name": "morpheus",
+    "job": "zion resident"
+}
+
+    with allure.step('Отправить PUT-запрос на http://reqres.in/api/users/2'):
+        response = requests.put(url, json=payload)
+    with allure.step('Проверить что статус ответа 200 OK'):
+        assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
+    with allure.step('Проверить, что в ответе содержится информация о пользователе'):
+        response_data = response.json()
+        assert response_data['name'] == payload['name']
+        assert response_data['job'] == payload['job']
+        assert 'updatedAt' in response_data
