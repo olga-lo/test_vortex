@@ -14,7 +14,7 @@ def test_get_existing_user():
     expected_last_name = "Weaver"
     expected_avatar_url = "https://reqres.in/img/faces/2-image.jpg"
 
-    with allure.step('Отправить GET-запрос http://api/users/{id}'):
+    with allure.step('Отправить GET-запрос http://reqres.in/api/users/{id}'):
         response = requests.get(f"{BASE_URL}/users/{user_id}")
 
     with allure.step('Проверить что статус ответа 200 OK'):
@@ -32,3 +32,30 @@ def test_get_existing_user():
                    "last_name"] == expected_last_name, f"Expected last name {expected_last_name}, but got {user_data['last_name']}"
         assert user_data[
                    "avatar"] == expected_avatar_url, f"Expected avatar URL {expected_avatar_url}, but got {user_data['avatar']}"
+
+
+
+
+@allure.feature('User')
+@allure.story('Создание нового пользователя')
+@allure.severity(allure.severity_level.CRITICAL)
+def test_create_user():
+    url = f"{BASE_URL}/users"
+    payload = {
+        "name": "morpheus",
+        "job": "leader"
+    }
+
+    with allure.step('Отправить POST-запрос на http://reqres.in/api/users'):
+        response = requests.post(url, json=payload)
+
+    with allure.step('Проверить что статус ответа 201 OK'):
+        assert response.status_code == 201, f"Expected status code 201, but got {response.status_code}"
+
+    with allure.step('Проверить, что в ответе содержится информация о пользователе'):
+        response_data = response.json()
+        assert response_data['name'] == payload['name']
+        assert response_data['job'] == payload['job']
+        assert 'id' in response_data
+        assert 'createdAt' in response_data
+
